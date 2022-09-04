@@ -3,6 +3,7 @@ from django.conf import settings
 
 
 class Category(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
 
     class Meta:
@@ -13,6 +14,7 @@ class Category(models.Model):
 
 
 class Origin(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
 
     def __str__(self):
@@ -20,6 +22,8 @@ class Origin(models.Model):
 
 
 class Entity(models.Model):
+    id = models.AutoField(primary_key=True)
+
     GENDER_MALE = "Male"
     GENDER_FEMALE = "Female"
     GENDER_OTHERS = "Others/Unknown"
@@ -58,6 +62,7 @@ class Entity(models.Model):
 
 
 class Hero(Entity):
+    id = models.AutoField(primary_key=True)
 
     class Meta:
         verbose_name_plural = "Heroes"
@@ -88,6 +93,7 @@ class HeroProxy(Hero):
         proxy = True
 
 class Villain(Entity):
+    id = models.AutoField(primary_key=True)
     is_immortal = models.BooleanField(default=False)
 
     malevolence_factor = models.PositiveSmallIntegerField(
@@ -101,6 +107,7 @@ class Villain(Entity):
 
 
 class HeroAcquaintance(models.Model):
+    id = models.AutoField(primary_key=True)
     "Non family contacts of a Hero"
     hero = models.OneToOneField(Hero, on_delete=models.CASCADE)
 
@@ -110,6 +117,7 @@ class HeroAcquaintance(models.Model):
 
 
 class AllEntity(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
 
     class Meta:

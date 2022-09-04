@@ -7,12 +7,14 @@ from django.contrib.auth.models import User
 
 
 class Epic(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     participating_heroes = models.ManyToManyField(Hero)
     participating_villains = models.ManyToManyField(Villain)
 
 
 class Event(models.Model):
+    id = models.AutoField(primary_key=True)
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -26,6 +28,7 @@ class Event(models.Model):
 
 
 class EventHero(models.Model):
+    id = models.AutoField(primary_key=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     hero = models.ForeignKey(Hero, on_delete=models.CASCADE)
     is_primary = models.BooleanField()
@@ -42,6 +45,7 @@ class UserParent(models.Model):
 
 
 class Article(models.Model):
+    id = models.AutoField(primary_key=True)
     headline = models.CharField(max_length=100)
     pub_date = models.DateField()
     reporter = models.ForeignKey(
@@ -63,6 +67,7 @@ class Article(models.Model):
 
 
 class TempUser(models.Model):
+    id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=100)
 
     class Meta:
@@ -71,6 +76,7 @@ class TempUser(models.Model):
 
 
 class ColumnName(models.Model):
+    id = models.AutoField(primary_key=True)
     a = models.CharField(
         max_length=40,
         db_column='column1'
