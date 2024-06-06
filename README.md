@@ -117,4 +117,10 @@ User.objects.filter(last_name=F("first_name"))  # 이름과 성이 동일한 사
 User.objects.annotate(first=Substr("first_name", 1, 1), last=Substr("last_name", 1, 1)).filter(first=F("last"))
 ## F 객체에서 __get, __lt 등의 룩업을 적용하는 것 또한 가능합니다.
 # ---
+# 9. FileField 에 파일이 들어있지 않은 행은 어떻게 구할 수 있나요?
+## FileField 와 ImageField 는 파일과 이미지 파일의 경로를 저장합니다. 데이터베이스 수준에서는 모두 CharField 와 동일한 방식으로 저장합니다.
+no_files_objects = MyModel.objects.filter(
+    Q(file='')|Q(file=None)
+)
+# ---
 ```
