@@ -108,4 +108,12 @@ Category.objects.all().annotate(  # annotate: 엑셀에서 계산용 컬럼을 �
     )
 )
 # ---
+# 8. 필드의 값을 서로 비교하여 항목을 선택할 수 있나요?
+from django.db.models.functions import Substr
+User.objects.filter(last_name=F("first_name"))  # 이름과 성이 동일한 사용자 찾기 / F("first_name") User Model 에 first_name을 가져온다.
+##* F 객체는 annotate 메서드로 계산해 둔 필드를 가리킬 때도 사용할 수 있습니다.
+# 이름의 첫 글자와 성의 첫 글자가 동일한 사용자를 구하고 싶다면
+## Substr(expression, pos, length=None, **extra)
+User.objects.annotate(first=Substr("first_name", 1, 1), last=Substr("last_name", 1, 1)).filter(first=F("last"))
+# ---
 ```
