@@ -123,4 +123,25 @@ no_files_objects = MyModel.objects.filter(
     Q(file='')|Q(file=None)
 )
 # ---
+# 10. 두 모델을 결합(JOIN) 하려면 어떻게 하나요?
+## SQL 에서는 JOIN 문을 이용해 동일한 값을 가진 열을 기준으로 두 표를 결합할 수 있습니다. 결합 연산은 여러 가지 방법으로 수행할 수 있습니다.
+## JOIN 여러 개의 테이블을 연결해준다.
+### INNER JOIN
+a1 = Article.objects.select_related('reporter')  # select_related 는 ForeignKey(1:N) or OneToOne / 단일 SQL 쿼리로 관련 객체를 가져옵니다. 이 방법은 쿼리 성능이 향상될 수 있지만, 많은 데이터가 조인되면 비효율적일 수 있습니다.
+# prefetch_related 는 ForeignKey or OneToOne or ManyToMany or OneToMany / SQL 쿼리로 관련 객체를 가져옵니다. 이 방법은 메모리 사용량이 증가할 수 있지만, 쿼리 수가 줄어들어 성능이 향상될 수 있습니다. 
+"""
+SELECT "events_article"."id", "events_article"."headline", "events_article"."pub_date", "events_article"."reporter_id", "events_article"."slug", "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "events_article" INNER JOIN "auth_user" ON ("events_article"."reporter_id" = "auth_user"."id") ORDER BY "events_article"."headline" AS
+"""
+a2 = Article.objects.filter(reporter__username='John')
+
+class Article(models.Model):
+    id = models.AutoField(primary_key=True)
+    headline = models.CharField(max_length=100)
+    pub_date = models.DateField()
+    reporter = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='reporter'
+    )
+
 ```
