@@ -167,4 +167,11 @@ LIMIT 1  # 제한 == [2]
 OFFSET 2  # 조회를 시작할 기준점 [0, 1, `2`]
 """
 # ---
+# 12. 특정 열의 값이 동일한 항목은 어떻게 찾나요?
+deplicates = User.objects.values('first_name').annotate(
+        name_count=Count('first_name')).filter(name_count__gt=1) # <QuerySet [{'first_name': 'Tim', 'name_count': 2}]>
+
+records = User.objects.filter(first_name__in=[item['first_name'] for item in deplicates])
+print([item.id for item in records])  # [3, 4]
+# ---
 ```
