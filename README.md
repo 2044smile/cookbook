@@ -47,5 +47,5 @@ str(queryset1.query) == str(queryset2.query) == str(queryset3.query)  # True
 ## exclude()
 queryset = User.objects.exclude(id__lt=5)
 ## filter()
-queryset = User.objects.filter(~Q(id__lt=5))
+queryset = User.objects.filter(~Q(id__lt=5))  # ~Q 부정 / WHERE NOT ("auth_user"."id" < 5)'
 ```
