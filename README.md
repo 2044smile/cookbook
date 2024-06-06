@@ -67,4 +67,15 @@ Here.objects.all().values_list(
         "name", "gender
 ))
 # ---
+# 6. 필요한 열만 골라 조회하려면 어떻게 하나요?
+## 쿼리셋의 values 메서드와 values_list 메서드
+User.objects.filter(
+    first_name__startswith='R'
+).values('first_name', 'last_name')  # SELECT "auth_user"."first_name", "auth_user"."last_name" FROM "auth_user" WHERE "auth_user"."first_name"::text LIKE R%
+## only 메서드
+queryset = User.objects.filter(
+    first_name__startswith='R'
+).only('first_name', 'last_name')  # SELECT "auth_user"."id", "auth_user"."first_name", "auth_user"."last_name" FROM "auth_user" WHERE "auth_user"."first_name"::text LIKE R%
+## only 메서드가 values 메서드와 다른 점은 id 필드를 가져온다는 점
+# ---
 ```
