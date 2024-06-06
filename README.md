@@ -29,4 +29,17 @@ queryset = User.objects.filter(
 from django.db.models import Q
 queryset = User.objects.filter(Q(first_name__startswith='R')|Q(last_name__startswith='D'))
 ## 성능 차이는 없다, 하지만 나는 아래의 코드를 선호
+# ---
+# 3. AND 연산으로 여러 조건을 모두 만족하는 항목을 구하려면 어떻게 하나요?
+# SELECT username, first_name, last_name, email FROM auth_user WHERE first_name LIKE 'R%' AND last_name LIKE 'D%';
+## 장고 쿼리셋의 filter 메서드에서 여러 조건을 결합하는 방법은 기본적으로 AND 방식이다.
+queryset1 = User.objects.filter(
+    first_name__startswith='R',
+    last_name__startswith='D'
+)
+queryset2 = User.objects.filter(first_name__startswith='R') & User.objects.filter(last_name__startswith='D')
+queryset3 = User.objects.filter(Q(first_name__startswith='R')&Q(last_name__startswith='D'))
+
+str(queryset1.query) == str(queryset2.query) == str(queryset3.query)  # True
+# ---
 ```
