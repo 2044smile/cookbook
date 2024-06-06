@@ -48,4 +48,23 @@ str(queryset1.query) == str(queryset2.query) == str(queryset3.query)  # True
 queryset = User.objects.exclude(id__lt=5)
 ## filter()
 queryset = User.objects.filter(~Q(id__lt=5))  # ~Q 부정 / WHERE NOT ("auth_user"."id" < 5)'
+# 5. 동일한 모델 또는 서로 다른 모델에서 구한 쿼리셋들을 합할 수 있나요?
+## 여러 개의 집합을 합할 때 UNION 연산을 이용합니다.
+## 장고 ORM 에서 union 메서드를 이용해 쿼리셋을 합할 수 있습니다.
+## 합하려는 쿼리셋의 모델이 서로 다른 경우, 각 쿼리셋에 포함된 필드와 데이터 유형이 서로 맞아야 합니다.
+q1 = User.objects.filter(id__gte=5)
+q2 = User.objects.filter(id__lte=9)
+
+q1.union(q2)
+q2.union(q1)
+## 쿼리셋의 필드와 데이터 유형이 서로 일치할 때만 실행할 수 있습니다.
+## Here 모델과 Villain 모델은 둘 다 name 필드와 gender 필드를 갖고 있습니다.
+## values_list 를 이용해 공통된 필드만 가져온 뒤 union을 수행할 수 있습니다.
+Here.objects.all().values_list(
+    "name", "gender"
+).union(
+    Villain.objects.all().values_list(
+        "name", "gender
+))
+# ---
 ```
