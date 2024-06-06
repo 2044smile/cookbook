@@ -115,5 +115,6 @@ User.objects.filter(last_name=F("first_name"))  # 이름과 성이 동일한 사
 # 이름의 첫 글자와 성의 첫 글자가 동일한 사용자를 구하고 싶다면
 ## Substr(expression, pos, length=None, **extra)
 User.objects.annotate(first=Substr("first_name", 1, 1), last=Substr("last_name", 1, 1)).filter(first=F("last"))
+## F 객체에서 __get, __lt 등의 룩업을 적용하는 것 또한 가능합니다.
 # ---
 ```
