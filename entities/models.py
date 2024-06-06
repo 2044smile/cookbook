@@ -61,18 +61,22 @@ class Entity(models.Model):
         abstract = True
 
 
-class Hero(Entity):
+class Hero(models.Model):
     id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = "Heroes"
 
     is_immortal = models.BooleanField(default=True)
     benevolence_factor = models.PositiveSmallIntegerField(
-        help_text="How benevolent this hero is?"
+        help_text="How benevolent this hero is?",
+        default=50
     )
     arbitrariness_factor = models.PositiveSmallIntegerField(
-        help_text="How arbitrary this hero is?"
+        help_text="How arbitrary this hero is?",
+        default=50
     )
     headshot = models.ImageField(null=True, blank=True, upload_to="hero_headshots/")
 

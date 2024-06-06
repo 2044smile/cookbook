@@ -78,4 +78,34 @@ queryset = User.objects.filter(
 ).only('first_name', 'last_name')  # SELECT "auth_user"."id", "auth_user"."first_name", "auth_user"."last_name" FROM "auth_user" WHERE "auth_user"."first_name"::text LIKE R%
 ## only 메서드가 values 메서드와 다른 점은 id 필드를 가져온다는 점
 # ---
+# 7. 장고에서 서브쿼리(subquery) 식을 사용할 수 있나요?
+## 서브쿼리, 질의문 내의 하위 질의
+## 내부 쿼리의 결과를 기반으로 데이터를 필터링, 검색 또는 조작 하는 데 자주 사용되는 다른 쿼리 내에 포함된 쿼리 입니다.
+### https://velog.io/@engineer_km/Django-ORM-QuerySet%EA%B5%AC%EC%A1%B0%EC%99%80-%EC%9B%90%EB%A6%AC-%EA%B7%B8%EB%A6%AC%EA%B3%A0-%EC%B5%9C%EC%A0%81%ED%99%94%EC%A0%84%EB%9E%B5-PyCon-Korea-2020-%EB%B0%9C%ED%91%9C-%EC%A0%95%EB%A6%AC
+from django.db.models import Subquery, OuterRef
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Hero(models.Model):
+    # ...
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    benevolence_factor = models.PositiveSmallIntegerField(
+        help_text="How benevolent this hero is?",
+        default=50
+    )
+
+hero_qs = Hero.objects.filter(
+    category=OuterRef("pk")  # 서브쿼리; 메인쿼리와 조인할 컬럼을 OuterRef 메소드를 지정한다.
+).order_by("-benevolence_factor")
+Category.objects.all().annotate(  # annotate: 엑셀에서 계산용 컬럼을 하나 추가하는 것과 같다. / aggregate: 액셀에서 특정 컬럼 전체를 대상으로 계산하는 것과 같다. (합, 평균, 개수 등)
+    most_benevolent_hero=Subquery(  # most_.. 별칭
+        hero_qs.values('name')[:1]  # 첫 번쨰 행의 'name' 을 구한다.
+    )
+)
+# ---
 ```
