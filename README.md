@@ -42,4 +42,10 @@ queryset3 = User.objects.filter(Q(first_name__startswith='R')&Q(last_name__start
 
 str(queryset1.query) == str(queryset2.query) == str(queryset3.query)  # True
 # ---
+# 4. NOT 연산으로 조건을 부정하려면 어떻게 하나요?
+# SELECT id, username, first_name, last_name, email FROM auth_user WHERE NOT id < 5;
+## exclude()
+queryset = User.objects.exclude(id__lt=5)
+## filter()
+queryset = User.objects.filter(~Q(id__lt=5))
 ```
