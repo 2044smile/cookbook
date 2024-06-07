@@ -212,4 +212,17 @@ queryset_and = User.objects.filter(
 queryset_not = User.objects.filter(
     Q(first_name__startswith='R') & ~Q(last_name__startswith='Z')  # NOT
 )
+# ---
+# 15. 기록된 항목의 집계를 구할 수 있나요?
+## 장고 ORM 을 이용해 항목을 생성, 조회, 갱신, 삭제할 수 있지만, 때로는 항목들의 집계값을 구하고 싶을 때가 있습니다. 장고 ORM 에는 SQL의 일반적인 집계 기능을 수행하는 Max, Min, Avg, Sum 등의 함수가 있습니다.
+from django.db.models import Avg, Max, Min, Sum, Count
+User.objects.all().aggregate(Avg('id'))
+# {'id__avg': 7.571428571428571}
+>>> User.objects.all().aggregate(Max('id'))
+# {'id__max': 15}
+>>> User.objects.all().aggregate(Min('id'))
+# {'id__min': 1}
+>>> User.objects.all().aggregate(Sum('id'))
+# {'id__sum': 106}
+# ---
 ```
