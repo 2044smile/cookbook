@@ -111,6 +111,12 @@ Category.objects.all().annotate(  # annotate: 엑셀에서 계산용 컬럼을 �
 # 8. 필드의 값을 서로 비교하여 항목을 선택할 수 있나요?
 from django.db.models.functions import Substr
 User.objects.filter(last_name=F("first_name"))  # 이름과 성이 동일한 사용자 찾기 / F("first_name") User Model 에 first_name을 가져온다.
+## F 는 모델의 필드, 파이썬으로 데이터를 가져오는 것이 아니라, 그 연산에 해당하는 쿼리를 만들어낸다.
+user = User.objects.get(name='Tim')
+user.age = F('age') + 1
+user.save()
+## 하지만 굳이 인스턴스를 만들어서 파이썬에서 할 필요가 없다.
+User.objects.update(age=F('age') + 1)
 ##* F 객체는 annotate 메서드로 계산해 둔 필드를 가리킬 때도 사용할 수 있습니다.
 # 이름의 첫 글자와 성의 첫 글자가 동일한 사용자를 구하고 싶다면
 ## Substr(expression, pos, length=None, **extra)
@@ -186,4 +192,6 @@ records = User.objects.filter(first_name__in=[item['first_name'] for item in dis
 ## distinct 중복 레코드 제거
 ### !WHAT! PostgreSQL 에서만 가능
 User.objects.distinct("first_name").all()
+# ---
+# 14. Q 객체를 이용해 복잡한 질의를 수행하는 방법은 무엇인가요?
 ```
