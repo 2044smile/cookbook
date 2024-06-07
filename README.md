@@ -174,4 +174,16 @@ deplicates = User.objects.values('first_name').annotate(
 records = User.objects.filter(first_name__in=[item['first_name'] for item in deplicates])
 print([item.id for item in records])  # [3, 4]
 # ---
+# 13. 쿼리셋에서 고유한 필드 값을 가진 항목은 어떻게 구하나요?
+## 값을 필터링
+distinct = User.objects.values(
+    'first_name'
+).annotate(
+    name_count=Count('first_name')
+).filter(name_count=1)
+## 출력
+records = User.objects.filter(first_name__in=[item['first_name'] for item in distinct])
+## distinct 중복 레코드 제거
+### !WHAT! PostgreSQL 에서만 가능
+User.objects.distinct("first_name").all()
 ```
