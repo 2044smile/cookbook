@@ -111,7 +111,7 @@ Category.objects.all().annotate(  # annotate: 엑셀에서 계산용 컬럼을 �
 # 8. 필드의 값을 서로 비교하여 항목을 선택할 수 있나요?
 from django.db.models.functions import Substr
 User.objects.filter(last_name=F("first_name"))  # 이름과 성이 동일한 사용자 찾기 / F("first_name") User Model 에 first_name을 가져온다.
-## F 는 모델의 필드, 파이썬으로 데이터를 가져오는 것이 아니라, 그 연산에 해당하는 쿼리를 만들어낸다.
+## F 는 모델의 필드, 파이썬 메모리로 데이터를 가져오는 것이 아니라, 그 연산에 해당하는 쿼리를 만들어낸다.
 user = User.objects.get(name='Tim')
 user.age = F('age') + 1
 user.save()
@@ -122,6 +122,11 @@ User.objects.update(age=F('age') + 1)
 ## Substr(expression, pos, length=None, **extra)
 User.objects.annotate(first=Substr("first_name", 1, 1), last=Substr("last_name", 1, 1)).filter(first=F("last"))
 ## F 객체에서 __get, __lt 등의 룩업을 적용하는 것 또한 가능합니다.
+## F() 의 장점
+### 1. 데이터베이스에서 쿼리 처리르 통해 성능을 높일 수 있다.
+### 2. 작업에 필요한 쿼리를 줄일 수 있다.
+### 3. Race Condition 문제를 회피
+### 장고는 데이터베이스 정보를 메모리로 가져와 처리한다. 만약 여러 요청이 동시에 하나의 객체로 접근 한다면 문제가 발생할 것이다.
 # ---
 # 9. FileField 에 파일이 들어있지 않은 행은 어떻게 구할 수 있나요?
 ## FileField 와 ImageField 는 파일과 이미지 파일의 경로를 저장합니다. 데이터베이스 수준에서는 모두 CharField 와 동일한 방식으로 저장합니다.
@@ -194,4 +199,17 @@ records = User.objects.filter(first_name__in=[item['first_name'] for item in dis
 User.objects.distinct("first_name").all()
 # ---
 # 14. Q 객체를 이용해 복잡한 질의를 수행하는 방법은 무엇인가요?
+## Q 객체를 통해 OR 연산, AND 연산, NOT 연산을 수행했다. Q 객체를 이용하면 SQL 질의문의 `WHERE(조건)` 절에 해당하는 기능을 온전히 활용할 수 있습니다.
+from django.db.models import Q
+queryset_or = User.objects.filter(
+    Q(first_name__startswith='R') | Q(last_name__startswith='D')  # OR
+)
+
+queryset_and = User.objects.filter(
+    Q(first_name__startswith='R') & Q(last_name__startswith='D')  # AND
+)
+
+queryset_not = User.objects.filter(
+    Q(first_name__startswith='R') & ~Q(last_name__startswith='Z')  # NOT
+)
 ```
