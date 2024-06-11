@@ -225,4 +225,46 @@ User.objects.all().aggregate(Avg('id'))
 >>> User.objects.all().aggregate(Sum('id'))
 # {'id__sum': 106}
 # ---
+# 16. 항목을 무작위로 뽑고 싶습니다. 효율적인 방법이 있을까요?
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name_plural = "Categories"
+
+    def __str__(self):
+        return self.name
+
+## 1. order_by 메서드로 항목들을 정렬할 때, 정렬 기준을 '무작위'로 지정하는 것 입니다. 데이터를 무작위로 정렬하여 첫 번째 항목을 가져오면 무작위 항목을 구할 수 있습니다.
+def get_random():
+    return Category.objects.order_by("?").first()
+### 주의: 사용하는 데이터베이스 시스템에 따라 order_by('?') 의 실행 비용이 비싸다고 성능이 느릴 수 있습니다.
+
+## 2. 전체 표를 정렬하는 대신 저장된 항목의 마지막 ID를 이용하는 것 입니다. 표에서 ID의 최대값을 구하고, 1과 마지막 ID 사이의 난수를 하나 생성합니다.
+from django.db.models import Max
+from entities.models import Category
+import random
+
+def get_random2():
+    max_id = Category.objects.all().aggrgate(max_id=Max("id"))['max_id']
+    pk = random.randint(1, max_id)
+    return Category.objects.get(pk=pk)
+### 이 방법은 항목을 삭제하거나 해서 ID 가 중간에 비어있는 경우에는 쓸 수 없습니다. 그런 경우에는 유효한 값이 나올 때 까지 반복하도록 하면 됩니다.
+
+## 3. 위의 함수를 수정
+def get_random3():
+    max_id = Cateogry.objects.all().aggregate(max_id=Max("id"))['max_id']
+    while True:
+        pk = random.randint(1, max_id)
+        category = Category.objects.filter(pk=pk).first()
+        if category:
+            return category
+### 삭제된 항목이 많지 않다면 무한반복 구문은 금방 종료될 것 입니다.
+In [14]: timeit.timeit(get_random3, number=100)
+Out[14]: 0.20055226399563253
+
+In [15]: timeit.timeit(get_random, number=100)
+Out[15]: 56.92513192095794
+### get_random3 이 get_random 보다 283배 빠르게 실행 되었습니다.
+### get_random 은 언제나 이용할 수 있는 반면에, get_random3 의 방법은 장고의 기본 ID 생성 방식을 재정의한 경우나 삭제된 항목이 너무 많을 때에는 사용하기가 어려울 수 있습니다.
 ```
