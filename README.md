@@ -93,6 +93,35 @@ Here.objects.all().values_list(
 )
 ```
 
+### 6. 필요한 열만 골라 조회하려면 어떻게 하나요?
+
+- only() vs values()
+  - only() 메서드의 경우 id 필드를 가져온다.
+
+- values vs values_list
+  - values 는 쿼리셋의 값을 딕셔너리 형태로 반환한다.
+  - values_list 는 쿼리셋의 값을 튜플 형태로 만든다.
+
+```python
+Post.objects.filter(id__lt=8).values('title')
+# <QuerySet [{'title': 'post #1'}, {'title': 'title #1'}, {'title': 'title #2'}]>
+Post.objects.filter(id__lt=8).values_list('title')
+# <QuerySet [{'title': 'post #1'}, {'title': 'title #1'}, {'title': 'title #2'}]>
+```
+
+1. ORM 사용하면 매우 편리하게 DB를 사용할 수 있어서 좋지만 떄로는 비합리적으로 동작할 때가 있어 대용량 데이터를 다룰 때 문제가 될 수 있다.
+2. values() 와 values_list() 는 ORM 쿼리 최적화의 방법 중 하나로서 필요한 필드의 값만 가져올 수 있고, 따라서 DB에 부하를 줄일 수 있다.
+
+```python
+# values
+User.objects.filter(
+    first_name__startswith='R'
+).values('first_name', 'last_name')  # SELECT "auth_user"."first_name", "auth_user"."last_name" FROM "auth_user" WHERE "auth_user"."first_name"::text LIKE R%
+# only 메서드
+queryset = User.objects.filter(
+    first_name__startswith='R'
+).only('first_name', 'last_name')  # SELECT "auth_user"."id", "auth_user"."first_name", "auth_user"."last_name" FROM "auth_user" WHERE "auth_user"."first_name"::text LIKE R%
+```
 
 ```python
 # ---
